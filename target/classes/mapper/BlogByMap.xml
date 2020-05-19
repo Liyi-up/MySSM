@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liyi.dao.BlogMapper">
+<!-- column对应多表查询中的每一个字段   property对应实体类中的属性 -->
+    <resultMap id="blogResult" type="com.liyi.pojo.Blog">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="content" property="content"/>
+        <result column="create_time" property="createTime"/>
+        <result column="type" property="type"/>
+        <result column="a_id" property="authorId"/>
+        <!--        映射关联属性-->
+        <association property="author" column="author_id" javaType="com.liyi.pojo.Author" resultMap="authorResult"/>
+        <collection property="comments" column="id" ofType="com.liyi.pojo.Comment" resultMap="commentResult"/>
+    </resultMap>
+    <!--    作者resultmap-->
+    <resultMap id="authorResult" type="com.liyi.pojo.Author">
+        <id column="a_id" property="id"/>
+        <result column="username" property="username"/>
+        <result property="password" column="password"/>
+        <result property="address" column="address"/>
+        <result property="email" column="email"/>
+        <result property="phone" column="phone"/>
+    </resultMap>
+    <!--    评论reslutmap-->
+    <resultMap id="commentResult" type="com.liyi.pojo.Comment">
+        <id property="id" column="c_id"/>
+        <result property="content" column="c_content"/>
+        <result property="postdate" column="postDate"/>
+    </resultMap>
+<select id="getLoginInit" resultMap="blogResult" resultType="list">
+         select b.id,b.title,b.content,b.create_time,b.type,b.author_id,
+         a.id a_id ,a.username, a.password,a.address,a.email,a.phone,c.blog_id,
+         c.id c_id,c.content c_content,c.postDate
+       from blog b left join author  a on b.author_id=a.id LEFT JOIN comment  c on b.id=c.blog_id
+        where a.username = #{username}
+</select>
+
+    <select id="getByTitle" resultMap="blogResult" resultType="list" >
+        select b.id,b.title,b.content,b.create_time,b.type,b.author_id,
+         a.id a_id ,a.username, a.password,a.address,a.email,a.phone,c.blog_id,
+         c.id c_id,c.content c_content,c.postDate
+       from blog b left join author  a on b.author_id=a.id LEFT JOIN comment  c on b.id=c.blog_id
+        where b.title like "%"#{title}"%"
+    </select>
+<!--    删除评论-->
+    <delete id="deleteCommentByBlogID">
+        delete from comment WHERE blog_id=#{blog.id}
+    </delete>
+<!--    删除作者-->
+    <delete id="deleteAuthorByBlogID">
+        delete from author WHERE id=#{authorId}
+    </delete>
+<!--    获取所有的博客类型-->
+    <select id="getTypes" resultType="String">
+        select distinct type from blog
+    </select>
+</mapper>

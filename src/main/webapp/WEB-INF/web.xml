@@ -1,0 +1,63 @@
+﻿<!DOCTYPE web-app PUBLIC
+        "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+        "http://java.sun.com/dtd/web-app_2_3.dtd" >
+
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         version="2.4"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee   http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+    <display-name>我的xml配置文件</display-name>
+
+    <!--    配置spring-->
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>classpath:spring/spring.xml</param-value>
+    </context-param>
+    <!--  1.启动监听器，做一些初始化的内容添加工作、设置一些基本的内容、比如一些参数或者是一些固定的对象等等-->
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+
+    <!--配置srpingmvc-->
+    <!--  配置核心控制器-->
+    <servlet>
+        <servlet-name>dispatcherServlet</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <!--        指定SpringMVC配置文件路径-->
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>classpath:spring/springMvc.xml</param-value>
+        </init-param>
+        <!--        如果值为正整数或者0时，表示容器在应用启动时就加载并初始化这个servlet，
+        值越小，servlet的优先级越高，就越先被加载。值相同时，容器就会自己选择顺序来加载-->
+        <!--        为负数或者没有设置，则容器会当Servlet被请求时再加载-->
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <!--    注册拦截地址-->
+    <servlet-mapping>
+        <servlet-name>dispatcherServlet</servlet-name>
+        <!--        拦截请求类型-->
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+    <!-- 编码过滤器 -->
+    <filter>
+        <filter-name>encodingFilter</filter-name>
+        <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+        <init-param>
+            <param-name>encoding</param-name>
+            <param-value>UTF-8</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>encodingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <!--  首页-->
+    <!--welcome pages-->
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+
+</web-app>
